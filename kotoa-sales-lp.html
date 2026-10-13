@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOTOA｜ブログ運営を9つのAIで自動化するWordPressプラグイン</title>
+<meta name="description" content="キーワードを入れるだけで、記事作成から装飾・画像・予約投稿まで自動化。楽天・Amazon・ASPの紹介記事も自動作成。バージョンアップ記念価格19,800円。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12161c; --panel:#1b212b; --panel-2:#222a35; --line:#313b48;
+    --text:#f2efe9; --muted:#9ba3af; --amber:#e8a33d; --amber-soft:rgba(232,163,61,.14); --locked:#6b7482;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;line-height:1.85;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Zen Kaku Gothic New',sans-serif;line-height:1.5;margin:0}
+  a{color:inherit}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+  .mono{font-family:'JetBrains Mono',monospace}
+
+  /* campaign bar */
+  .campaign-bar{background:var(--amber);color:#1a1305;text-align:center;font-weight:700;font-size:14px;padding:10px 16px}
+  .campaign-bar small{font-weight:500}
+
+  header.site{padding:20px 0;border-bottom:1px solid var(--line)}
+  header.site .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:20px}
+  .logo span{color:var(--amber)}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);border:1px solid var(--amber-soft);background:var(--amber-soft);padding:6px 12px;border-radius:100px}
+
+  .hero{padding:80px 0 56px;text-align:center}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.08em;color:var(--amber);margin-bottom:20px}
+  .hero h1{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-.01em}
+  .hero h1 em{font-style:normal;color:var(--amber)}
+  .hero p.sub{max-width:680px;margin:24px auto 0;color:var(--muted);font-size:16px}
+  .price-hero{margin:36px auto 0;display:inline-block;background:var(--panel);border:1px solid var(--amber);border-radius:14px;padding:22px 36px}
+  .price-hero .was{color:var(--muted);font-size:14px}
+  .price-hero .was s{font-size:18px}
+  .price-hero .now{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:clamp(36px,7vw,56px);color:var(--amber);line-height:1.2}
+  .price-hero .now small{font-size:16px;color:var(--text)}
+  .price-hero .off{display:inline-block;background:var(--amber);color:#1a1305;font-weight:700;font-size:13px;padding:2px 12px;border-radius:100px;margin-left:8px;vertical-align:middle}
+  .period{margin-top:10px;color:var(--muted);font-size:13px}
+
+  .btn-group{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:32px}
+  .btn-primary,.btn-secondary{display:inline-block;font-weight:700;font-size:16px;line-height:1.4;padding:17px 34px;border-radius:8px;text-decoration:none;text-align:center;min-width:260px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+  .btn-primary{background:var(--amber);color:#1a1305;box-shadow:0 8px 24px rgba(232,163,61,.25)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(232,163,61,.35)}
+  .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--amber)}
+  .btn-secondary:hover{background:var(--amber-soft);transform:translateY(-2px)}
+  .btn-primary:focus-visible,.btn-secondary:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+  section{padding:0 0 88px}
+  .sec-head{text-align:center;margin-bottom:40px}
+  .sec-head .eyebrow{margin-bottom:12px}
+  .sec-head h2{font-size:clamp(22px,3.6vw,32px);font-weight:900}
+  .sec-head p{color:var(--muted);margin:14px auto 0;max-width:640px}
+
+  .worries{max-width:720px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 32px}
+  .worries li{list-style:none;padding:8px 0 8px 28px;position:relative;border-bottom:1px dashed var(--line)}
+  .worries li:last-child{border-bottom:none}
+  .worries li::before{content:"✓";position:absolute;left:0;color:var(--amber);font-weight:700}
+  .worries-ul{margin:0;padding:0}
+  .worries-end{text-align:center;margin-top:24px;font-weight:700}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
+  .card .no{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;display:block;margin-bottom:6px}
+  .card h3{font-size:16px;margin-bottom:10px}
+  .card p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.8}
+  .card.main{grid-column:1/-1;border-color:var(--amber);background:linear-gradient(180deg,var(--panel-2),var(--panel))}
+  .card.main p{font-size:14.5px}
+  .card .new{display:inline-block;font-size:11px;font-weight:700;background:var(--amber);color:#1a1305;padding:1px 10px;border-radius:100px;margin-left:8px;vertical-align:middle}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+
+  .deco{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center}
+  .deco ul{margin:0;padding-left:20px;color:var(--muted)}
+  .deco li{margin:6px 0}
+  .sample{background:#fff;color:#222;border-radius:12px;padding:20px 22px;font-size:14px;line-height:1.8}
+  .sample .pt{background:#fff9e6;border:2px solid #f5c518;border-radius:8px;padding:12px 16px;margin:10px 0}
+  .sample .pt b{color:#b8860b}
+  .sample .ck{background:#f0f8ff;border-left:4px solid #4a90d9;padding:10px 14px;margin:10px 0}
+  .sample .bt{display:block;text-align:center;background:#ff9900;color:#111;font-weight:700;border-radius:999px;padding:10px;margin-top:12px}
+  .sample u{text-decoration-color:#e8a33d;text-decoration-thickness:2px}
+  @media(max-width:760px){.deco{grid-template-columns:1fr}}
+
+  .bonus{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .bonus-item{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .bonus-item .n{font-family:'JetBrains Mono',monospace;color:var(--amber);font-weight:700;font-size:20px;line-height:1.3;min-width:30px}
+  .bonus-item h3{font-size:15px;margin-bottom:4px}
+  .bonus-item p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+  @media(max-width:760px){.bonus{grid-template-columns:1fr}}
+
+  .price-box{max-width:640px;margin:0 auto;background:var(--panel);border:1px solid var(--amber);border-radius:16px;padding:34px 32px;text-align:center}
+  .price-box .was{color:var(--muted)}
+  .price-box .now{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:clamp(40px,8vw,60px);color:var(--amber);line-height:1.3}
+  .price-box .now small{font-size:16px;color:var(--text)}
+  .price-box ul{list-style:none;padding:0;margin:20px 0 0;text-align:left;color:var(--muted);font-size:13.5px}
+  .price-box li{padding:6px 0;border-top:1px solid var(--line)}
+
+  .needs{max-width:720px;margin:0 auto;color:var(--muted)}
+  .needs li{margin:8px 0}
+  .for-list{max-width:720px;margin:0 auto;padding-left:20px;color:var(--muted)}
+  .for-list li{margin:8px 0}
+
+  .faq-item{border-bottom:1px solid var(--line);padding:22px 0;max-width:820px;margin:0 auto}
+  .faq-item h3{font-size:15px;margin-bottom:8px;display:flex;gap:10px}
+  .faq-item h3 span{color:var(--amber)}
+  .faq-item p{margin:0;color:var(--muted);font-size:14px}
+
+  .final-cta{text-align:center;padding:84px 0 92px;border-top:1px solid var(--line)}
+  .final-cta h2{font-size:clamp(22px,4vw,32px);margin-bottom:16px}
+  .final-cta p{color:var(--muted);margin:0}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:var(--locked);font-size:12.5px}
+  footer a{color:var(--muted);text-decoration:underline}
+  footer .links{margin-bottom:10px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!--
+==================================================
+ ★ リンクの設定場所（ここだけ編集してください）
+ 下の LINKS の '' の中に、それぞれのURLを入れます。
+   credit  : クレジットカードで購入する のリンク先
+   bank    : 銀行振込で購入する のリンク先
+   tokusho : 特定商取引法に基づく表記 のリンク先
+ 設定すると、ページ内のすべてのボタン・リンクに反映されます。
+==================================================
+-->
+<script>
+  var LINKS = {
+    credit:  '',   // ★クレジットカード購入ページのURL
+    bank:    '',   // ★銀行振込購入ページのURL
+    tokusho: ''    // ★特定商取引法に基づく表記ページのURL
+  };
+  document.addEventListener('DOMContentLoaded', function () {
+    Object.keys(LINKS).forEach(function (k) {
+      document.querySelectorAll('[data-link="' + k + '"]').forEach(function (a) {
+        if (LINKS[k]) { a.setAttribute('href', LINKS[k]); }
+      });
+    });
+  });
+</script>
+
+<div class="campaign-bar">バージョンアップ記念キャンペーン｜通常29,800円 → <b>19,800円（10,000円OFF）</b> <small>※期間：【◯月◯日】まで</small></div>
+
+<header class="site">
+  <div class="wrap">
+    <div class="logo">KOTO<span>A</span></div>
+    <div class="tag">WORDPRESS PLUGIN</div>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow">AI BLOG AUTOMATION</div>
+    <h1>キーワードを入れるだけ。<br>ブログ運営の「面倒」を、<em>9つのAI</em>が代わりにやってくれる。</h1>
+    <p class="sub">記事のネタ探しから、タイトル・構成・本文・装飾・画像・SEOチェック・予約投稿まで。<br>楽天・Amazon・ASPの商品情報を入れるだけで、アフィリエイト記事まで自動で完成します。</p>
+    <div class="price-hero">
+      <div class="was">通常価格 <s>29,800円</s></div>
+      <div class="now">19,800<small>円（税込）</small><span class="off">10,000円OFF</span></div>
+      <div class="period">バージョンアップ記念キャンペーン｜【◯月◯日】まで</div>
+    </div>
+    <div class="btn-group">
+      <a href="#" data-link="credit" class="btn-primary">クレジットカードで購入する</a>
+      <a href="#" data-link="bank" class="btn-secondary">銀行振込で購入する</a>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">PROBLEM</div>
+      <h2>こんな悩みはありませんか？</h2>
+    </div>
+    <div class="worries">
+      <ul class="worries-ul">
+        <li>記事のネタが思いつかない</li>
+        <li>タイトルを考えるだけで時間が溶ける</li>
+        <li>見出し構成を考えるのが苦手</li>
+        <li>本文を書く時間が取れない</li>
+        <li>記事を書けても、装飾（強調・表・囲み）に時間がかかる</li>
+        <li>アイキャッチや見出し画像を探すのが面倒</li>
+        <li>SNSやメルマガのネタも、定期的に考えないといけない</li>
+        <li>アフィリエイトの紹介記事やLPを書くのは荷が重い</li>
+      </ul>
+    </div>
+    <p class="worries-end">KOTOAは、これらすべてをAIと一緒に解決するために作られました。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">FEATURES</div>
+      <h2>KOTOAでできること（全9機能）</h2>
+      <p>すべての機能を、1つの管理画面から使えます。インストールも設定も1回だけ。</p>
+    </div>
+    <div class="grid">
+      <div class="card main">
+        <span class="no">01</span>
+        <h3>30日ブログ運営AI（メイン機能）</h3>
+        <p>ジャンルを入力するとSEOに強いキーワードを自動提案。キーワードから記事タイトルを一括生成し、その場で編集・並び替えもできます。タイトルが決まれば、H2/H3の記事構成、本文、アイキャッチ・見出し画像まで自動作成。仕上げにSEOチェックを行い、日程を指定するだけで1日1記事ずつWordPressに予約投稿されます。「キーワードを入れただけなのに、気づけば1ヶ月分の記事が予約されていた」そんな体験ができます。</p>
+      </div>
+      <div class="card">
+        <span class="no">02</span>
+        <h3>SNS・Substack作成AI</h3>
+        <p>1つのテーマから、X・Instagram・Threads・Substackそれぞれの文字数と作法に合わせた投稿文を一括生成します。</p>
+      </div>
+      <div class="card">
+        <span class="no">03</span>
+        <h3>画像プロンプト作成AI</h3>
+        <p>テーマとスタイルを指定するだけで画像用プロンプトを3パターン作成。その場で画像を生成し、文字を重ねて合成もできます。</p>
+      </div>
+      <div class="card">
+        <span class="no">04</span>
+        <h3>AIブログ秘書</h3>
+        <p>「今日のネタを探して」「この見出し、もっといい案ある？」そんな相談を、チャット感覚でいつでもできます。</p>
+      </div>
+      <div class="card">
+        <span class="no">05</span>
+        <h3>ブログ点検AI</h3>
+        <p>記事を貼り付ける、または記事のURLを入れるだけで、タイトル・構成・導入文・キーワードの使い方を点検し、具体的な改善提案をします。</p>
+      </div>
+      <div class="card">
+        <span class="no">06</span>
+        <h3>リライトAI</h3>
+        <p>「分かりやすく」「SEO強化」「最新情報に更新」「文字数を増やす」など、狙った方向性でリライト。Before/Afterを比較できます。</p>
+      </div>
+      <div class="card">
+        <span class="no">07</span>
+        <h3>アフィリエイトAI<span class="new">大幅強化</span></h3>
+        <p>楽天・Amazon・ASPの商品名・型番・URL・特徴・口コミを入れるだけで、記事・装飾・購入ボタンの配置まで自動作成。単品紹介／比較記事／ランキング形式に対応します。</p>
+      </div>
+      <div class="card">
+        <span class="no">08</span>
+        <h3>LP作成AI</h3>
+        <p>商品情報から、見出し・悩み・特徴・FAQまで含めたLPコピーを生成。画像や決済リンクも設定でき、HTMLでダウンロードできます。</p>
+      </div>
+      <div class="card">
+        <span class="no">09</span>
+        <h3>メルマガAI・noteAI</h3>
+        <p>メルマガは単発もステップメールも一括作成。noteは体験談・ノウハウ・エッセイの3トーンから記事を作成できます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">DECORATION</div>
+      <h2>装飾まで自動で仕上がる</h2>
+      <p>文字を並べるだけの記事ではありません。読みやすい装飾が、最初から施された状態で完成します。</p>
+    </div>
+    <div class="deco">
+      <ul>
+        <li>下線での強調</li>
+        <li>箇条書き・比較表</li>
+        <li>📌ポイントの黄色い囲み</li>
+        <li>✅チェックポイントの青い囲み</li>
+        <li>H3の小見出し</li>
+        <li>購入ボタン（楽天＝赤／Amazon＝オレンジ／ASP＝青）を自動で配置</li>
+        <li>PR表記・Amazonアソシエイト表記も自動で挿入</li>
+      </ul>
+      <div class="sample" aria-label="装飾のイメージ">
+        <b>○○のおすすめポイント</b><br>
+        軽くて持ち運びやすいのが<u>いちばんの特徴</u>です。
+        <div class="pt"><b>📌 ポイント</b><br>選ぶときは「使う場面」から考えましょう。</div>
+        <div class="ck"><b>✅ チェックポイント</b><br>・サイズ　・価格　・購入先</div>
+        <span class="bt">Amazonで詳細を見る ▶</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">NEW</div>
+      <h2>アフィリエイト記事も、入力するだけ</h2>
+      <p>掲載元（楽天・Amazon・ASP）、商品名、型番（無ければ商品説明）、URL、特徴、口コミを入れて「記事を自動作成」を押すだけ。文字量は「標準／充実／たっぷり」から選べ、ボタンの位置も指定できます。</p>
+    </div>
+    <div class="worries">
+      <ul class="worries-ul">
+        <li>単品紹介・比較記事・ランキング形式を選べる</li>
+        <li>入力していないスペックや口コミを、AIが勝手に書くことはありません</li>
+        <li>入力した口コミは、そのまま「ご利用者の声」として掲載</li>
+        <li>できあがった記事は、HTMLのコピー、または下書き保存ができる</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">BONUS</div>
+      <h2>今なら購入特典が8つ</h2>
+    </div>
+    <div class="bonus">
+      <div class="bonus-item"><div class="n">1</div><div><h3>ブログ収益シミュレーター</h3><p>PV数・クリック率・成約率を入力するだけで、想定収益をその場で計算。</p></div></div>
+      <div class="bonus-item"><div class="n">2</div><div><h3>投稿スケジュールカレンダー生成ツール</h3><p>30記事分のタイトルを入れると、投稿日ごとのカレンダーを自動生成。</p></div></div>
+      <div class="bonus-item"><div class="n">3</div><div><h3>SNS投稿頻度プランナー</h3><p>週の投稿回数を決めるだけで、曜日別の投稿プランが完成。</p></div></div>
+      <div class="bonus-item"><div class="n">4</div><div><h3>ブログタイトル職人GPT</h3><p>作成したタイトルを、さらに壁打ちできる専用GPT。</p></div></div>
+      <div class="bonus-item"><div class="n">5</div><div><h3>SEO構成チェッカーGPT</h3><p>記事構成を貼るだけで、検索意図・網羅性を意識した改善案を提案。</p></div></div>
+      <div class="bonus-item"><div class="n">6</div><div><h3>キャッチコピー職人GPT</h3><p>LPや広告用のキャッチコピーを、何パターンも提案。</p></div></div>
+      <div class="bonus-item"><div class="n">7</div><div><h3>ブログ執筆アシスタントGPT</h3><p>段落ごとに一緒に本文を書き進めてくれる伴走型の執筆パートナー。</p></div></div>
+      <div class="bonus-item"><div class="n">8</div><div><h3>アフィリエイト取引明細シート</h3><p>アフィリエイトの成果を1つのシートで管理し、収益を見える化。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="price">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">PRICE</div>
+      <h2>バージョンアップ記念キャンペーン価格</h2>
+    </div>
+    <div class="price-box">
+      <div class="was">通常価格 <s>29,800円</s></div>
+      <div class="now">19,800<small>円（税込）</small></div>
+      <div class="period">10,000円OFF｜【◯月◯日】まで</div>
+      <ul>
+        <li>ライセンスは1ドメイン1本です（同じドメイン内のサブドメイン・サブディレクトリは追加費用なし）</li>
+        <li>2本目以降の追加ライセンス（別ドメインでのご利用）：10,000円</li>
+        <li>購入特典8つ付き／購入後のアップデートは会員サイトから</li>
+      </ul>
+      <div class="btn-group">
+        <a href="#" data-link="credit" class="btn-primary">クレジットカードで購入する</a>
+        <a href="#" data-link="bank" class="btn-secondary">銀行振込で購入する</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">REQUIREMENTS</div>
+      <h2>ご利用に必要なもの</h2>
+    </div>
+    <ul class="needs">
+      <li>WordPress（プラグインとしてインストール）</li>
+      <li>OpenAI APIキー（ご自身でご用意いただき、利用量に応じた料金が別途かかります）</li>
+      <li>API利用料の目安：記事生成・画像生成で、1記事あたり数十円程度</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">FOR YOU</div>
+      <h2>こんな方におすすめ</h2>
+    </div>
+    <ul class="for-list">
+      <li>ブログ運営に割ける時間が限られている副業ブロガーの方</li>
+      <li>複数のブログ・SNSを掛け持ちしている方</li>
+      <li>記事のネタ切れに悩んでいる方</li>
+      <li>文章を書くのが苦手、または時間がかかってしまう方</li>
+      <li>楽天・Amazon・ASPの紹介記事を、手間をかけずに作りたいアフィリエイターの方</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">FAQ</div>
+      <h2>よくあるご質問</h2>
+    </div>
+    <div class="faq-item"><h3><span>Q.</span>WordPressの知識がなくても使えますか？</h3><p>A. はい。管理画面にプラグインを追加し、画面の指示どおりに進めるだけでご利用いただけます。</p></div>
+    <div class="faq-item"><h3><span>Q.</span>別途費用はかかりますか？</h3><p>A. OpenAI APIのご利用分（記事1本あたり数十円程度）が別途かかります。</p></div>
+    <div class="faq-item"><h3><span>Q.</span>複数のサイトで使えますか？</h3><p>A. 1ライセンスにつき1ドメインまでです。同じドメイン内であれば、サブドメインやサブディレクトリの違いは追加費用なくご利用いただけます。別ドメインでは追加ライセンス（10,000円）をご案内しています。</p></div>
+    <div class="faq-item"><h3><span>Q.</span>キャンペーン価格はいつまでですか？</h3><p>A. 【◯月◯日】までです。期間終了後は通常価格（29,800円）に戻ります。</p></div>
+    <div class="faq-item"><h3><span>Q.</span>購入後のアップデートはありますか？</h3><p>A. はい。会員サイトから最新版をダウンロードし、プラグインを入れ替えるだけで更新できます。</p></div>
+  </div>
+</section>
+
+<div class="final-cta" id="apply">
+  <div class="wrap">
+    <h2>キーワードを入れるだけの毎日へ。</h2>
+    <p>バージョンアップ記念価格 19,800円（通常29,800円）</p>
+    <div class="btn-group">
+      <a href="#" data-link="credit" class="btn-primary">クレジットカードで購入する</a>
+      <a href="#" data-link="bank" class="btn-secondary">銀行振込で購入する</a>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="links"><a href="#" data-link="tokusho">特定商取引法に基づく表記</a></div>
+    ©2026 MMオフィス
+  </div>
+</footer>
+
+</body>
+</html>
